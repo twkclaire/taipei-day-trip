@@ -84,12 +84,12 @@ async def get＿mrts():
 
 
 @app.get("/api/attractions")
-async def get＿attractions(page_num: int= Query(...,gt=-1), keyword:str | None = None):
+async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = None):
 
-	if page_num==0:
+	if page==0:
 		start=0
 	else:
-		start =(page_num -1)* 12 +12
+		start =(page -1)* 12 +12
 
 	try:
 		if keyword is None:
@@ -122,7 +122,7 @@ async def get＿attractions(page_num: int= Query(...,gt=-1), keyword:str | None 
 				result.append(data)
 		item_num=len(all_attractions)
 		if item_num == 12:	
-			nextPage=page_num+1	
+			nextPage=page+1	
 		else:
 			nextPage=None
 		return{"nextPage": nextPage, "data": result}
