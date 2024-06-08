@@ -1,6 +1,7 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 import mysql.connector
+from fastapi.staticfiles import StaticFiles
 
 mydb = mysql.connector.connect(
   host="localhost",
@@ -12,6 +13,7 @@ mydb = mysql.connector.connect(
 mycursor = mydb.cursor()
 
 app=FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -94,15 +96,19 @@ async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = No
 	try:
 		if keyword is None:
 
-			sql=("SELECT * FROM attractions ORDER BY id LIMIT 12 OFFSET %s")
+			sql=("SELECT * FROM attractions ORDER BY id LIMIT 13 OFFSET %s")
 			sql_data=(start,)
 			mycursor.execute(sql,sql_data)
 			all_attractions = mycursor.fetchall()
+			num_result=len(all_attractions)
+
 		else: 
-			sql=("SELECT * FROM attractions WHERE name LIKE %s OR mrt = %s ORDER BY id LIMIT 12 OFFSET %s")
+			sql=("SELECT * FROM attractions WHERE name LIKE %s OR mrt = %s ORDER BY id LIMIT 13 OFFSET %s")
 			sql_data=["%"+keyword+"%",keyword,start]
 			mycursor.execute(sql,sql_data)
 			all_attractions=mycursor.fetchall()
+			num_result=len(all_attractions)
+
 		result=[]
 		for attraction in all_attractions:
 				data={
@@ -120,8 +126,7 @@ async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = No
 				}
 
 				result.append(data)
-		item_num=len(all_attractions)
-		if item_num == 12:	
+		if num_result == 13:	
 			nextPage=page+1	
 		else:
 			nextPage=None

@@ -1,0 +1,297 @@
+@import url('https://fonts.googleapis.com/css2?family=Noto+Sans+TC:wght@100..900&display=swap');
+
+
+
+*{
+    margin:0;
+    padding:0;
+    box-sizing: border-box;
+    font-family: "Noto Sans TC", sans-serif;
+  }
+
+  html, body {
+    height: 100%;
+}
+.body-wrap{
+    flex:1;
+    margin: 40px auto; 
+}
+body {
+    display: flex;
+    flex-direction: column;
+    min-height: 100vh;
+}
+
+header{
+    height: 54px;
+    top: 0;
+    background-color: white;
+    z-index: 100;
+    position:fixed; 
+    width:100%; 
+}  
+
+.flex-view{
+    max-width: 1200px;
+    display:flex;
+    justify-content: space-between;
+    margin: auto;
+    align-items: center;
+    padding-top:5px; 
+}
+a {
+    text-decoration: none;
+}
+.title{
+    color:#448899;
+    font-size: 30px;
+    font-weight: bold;
+}
+
+.item{
+    color:#666666;
+    font-size:16px; 
+    font-weight:600; 
+}
+.hero-wrap{
+    display: flex;
+    background-size: cover;
+    object-fit: cover;
+    margin-top:54px; 
+    height:320px;
+    align-items:center; 
+    justify-content: center;
+    flex-shrink: 0;
+}
+
+.hero-text-wrap{
+    display:flex;
+    flex-direction: column;
+    width: 1200px; 
+    padding: 10px;
+    gap:10px; 
+    margin:auto; /*horizontally center*/
+}
+
+.hero-text, .hero-des{
+    color:#FFFFFF
+}
+
+
+.hero-text{
+    font-weight:bold;
+    font-size:28px;
+    line-height: 24px;
+    margin-bottom:20px;
+}
+
+.hero-des{
+    font-weight: 600;
+    font-size:16px;
+    line-height: 13.3px;
+    margin-bottom:20px;
+}
+.search-outer-wrap{
+    display:flex;
+    width:50%;
+}
+.search-wrap{
+    display: flex;
+    height:46px;
+    border-radius: 50px;
+    flex:1;
+}
+
+.spot-input{
+    width:90%;
+    min-width:225px; 
+    border-radius: 5px 0 0 5px;
+    border: 0;
+
+}
+
+input[type="text" i] {
+    padding-left: 15px;
+    font-weight: bold;
+    color:#757575; 
+}
+.search-btn{
+    background-color: #448899;
+    width:60px;
+    border:0;
+    border-radius: 0 5px 5px 0; 
+}
+
+.bar-wrap{
+    display:flex;
+    flex-direction: row;
+    max-width:1200px;
+    margin:0 auto;
+    padding-bottom: 20px;
+ 
+}
+
+.btn{
+    border:0;
+    background-color: #FFFFFF;
+}
+
+.station-wrap::-webkit-scrollbar {
+    display: none;
+}
+
+.station-wrap{
+    display: flex;
+    overflow:scroll; 
+    flex-grow: 1
+}
+.stations{
+    white-space: nowrap;
+    display:flex;
+    flex-grow:1;
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+    overflow:scroll;
+    scroll-behavior: smooth; 
+
+}
+
+.station{
+    padding:5px 20px 5px 20px;
+    color:#666666;
+    font-weight: 600;
+}
+
+.all-card, .allcard {
+    display: grid;
+    grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
+    gap: 30px;
+    max-width: 1200px;
+    margin: 20px auto;
+  }
+  
+  .card-wrap {
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    overflow: hidden;
+  }
+  
+  .img-wrap {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+  }
+  
+  .card {
+    position: relative;
+    width: 100%;  /* Ensures the card takes full width of the parent */
+    height: 200px; /* Fixed height for the card */
+  }
+  
+  .spot-image {
+    display: block; 
+    width: 100%;    
+    height: 100%;   
+    object-fit: cover;  /* Cover the container without distorting */
+  }
+  
+  .name {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.5);
+    color: white;
+    padding: 10px; /* Add some padding for visual effect */
+    white-space: nowrap;
+  }
+  
+  .text-wrap {
+    display: flex;
+    justify-content: space-between;
+    height: 45px;
+    align-items: center;
+    padding-left: 10px;
+    padding-right: 10px;
+  }
+
+  .search-btn, .bar-wrap, .btn{
+    cursor:pointer;
+}
+footer{
+    background-color: #757575;
+    text-align: center;
+    padding: 40px 0;
+}
+.footer-text{
+    color:#FFFFFF;
+    font-weight:bold;
+    font-size: 16px;
+    line-height: 13.3px;
+
+}
+
+@media only screen and (max-width: 1200px) {
+    .bar-wrap{
+        max-width:900px;
+        margin:0 auto;
+        padding-bottom: 20px;
+    
+    }
+    .allcard{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 30px;
+        max-width: 900px;
+        margin:20px auto; 
+    
+    }
+    .hero-text-wrap, .flex-view{
+        max-width:900px;
+        margin:0 auto;
+    }
+
+}
+
+@media only screen and (max-width: 900px) {
+    .bar-wrap{
+        max-width:700px;
+        margin:0 auto;
+        padding-bottom: 20px;
+    
+    }
+    .allcard{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(220px, 1fr));
+        gap: 30px;
+        max-width: 700px;
+        margin:20px auto; 
+    
+    }
+    .hero-text-wrap, .flex-view{
+        max-width:700px;
+        margin:0 auto;
+    }
+
+}
+
+@media only screen and (max-width: 720px) {
+    .bar-wrap{
+        max-width:352px;
+        margin:0 auto;
+        padding-bottom: 20px;
+    
+    }
+    .allcard{
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(332px, 1fr));
+        gap: 30px;
+        max-width: 352px;
+        margin:20px auto; 
+    
+    }
+    .hero-text-wrap, .flex-view{
+        max-width:352px;
+        margin:0 auto;
+    }
+}
