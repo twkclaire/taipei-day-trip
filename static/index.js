@@ -1,7 +1,8 @@
 let page = 0;
 let src = "";
 let keyword = "";
-let fetching = true;
+// let loadMore = true;
+let isFetching=false; 
 const stations = document.querySelector(".stations");
 
 async function getMrt() {
@@ -43,7 +44,7 @@ document.addEventListener("click", (event) => {
         document.querySelector(".spot-input").value = keyword;
         console.log(keyword);
         page = 0;
-        fetching = true;
+        // loadMore = true;
         document.querySelector(".allcard").innerHTML = "";
         getCards();
     }
@@ -53,26 +54,28 @@ document.getElementById("search-btn").addEventListener("click", () => {
     keyword = getKeyword();
 
     page = 0;
-    fetching = true;
+    // loadMore = true;
     document.querySelector(".allcard").innerHTML = ""; //erase all cards
     getCards();
 
 });
 
 async function getCards() {
-    if (!fetching) return; //If fetching is set to false exit.
-
-    if (page != null && keyword === "") {
+    // if (!loadMore) return; //If fetching is set to false exit.
+    isFetching=true; //when enter function, browser starts fetching for the first
+    if (page == null){ //stop loading if nextPage is null
+        return;
+    } else if(page != null && keyword === "") {
         src = `/api/attractions?page=${page}`;
     } else {
-        src = `/api/attractions?page=${page}&keyword=${keyword}`; //need to deal with page varaible
+        src = `/api/attractions?page=${page}&keyword=${keyword}`;
     }
     try {
         const response = await fetch(src);
         const data = await response.json();
-        const nextPage=data.nextPage
+        const nextPage = data.nextPage
         let result = data.data;
-        // console.log("here's the result:",result);
+
         let allCard = document.querySelectorAll(".allcard")
 
         for (let i = 0; i < Math.min(12, result.length); i++) {
@@ -112,14 +115,12 @@ async function getCards() {
             allCard[0].appendChild(cardWrap);
 
         }
-        if (result.length < 12 || page >= 5) {
-            fetching = false;
-        } else {
-            page=nextPage;
-            // console.log("next page is:",page);
-        }
+        page = nextPage;
+
     } catch (error) {
         console.error('Error fetching cards:', error);
+    } finally{
+        isFetching=false; 
     }
 
 }
@@ -127,14 +128,12 @@ async function getCards() {
 getCards().then(() => {
     const observer = new IntersectionObserver(
         async function (entries, observer) {
-            if (entries[0].isIntersecting && fetching) {
+            if (entries[0].isIntersecting) {
                 setTimeout(async () => {
                     await getCards();
                     observer.unobserve(entries[0].target);
-                    if (fetching) {
-                        observer.observe(document.querySelector("footer"));
-                    }
-                }, 3000);
+                    observer.observe(document.querySelector("footer"));
+                },2000);
 
             }
         },
