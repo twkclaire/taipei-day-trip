@@ -1,7 +1,6 @@
 let page = 0;
 let src = "";
 let keyword = "";
-// let loadMore = true;
 let isFetching=false; 
 const stations = document.querySelector(".stations");
 
@@ -44,7 +43,6 @@ document.addEventListener("click", (event) => {
         document.querySelector(".spot-input").value = keyword;
         console.log(keyword);
         page = 0;
-        // loadMore = true;
         document.querySelector(".allcard").innerHTML = "";
         getCards();
     }
@@ -52,17 +50,16 @@ document.addEventListener("click", (event) => {
 
 document.getElementById("search-btn").addEventListener("click", () => {
     keyword = getKeyword();
-
     page = 0;
-    // loadMore = true;
     document.querySelector(".allcard").innerHTML = ""; //erase all cards
     getCards();
 
 });
 
 async function getCards() {
-    // if (!loadMore) return; //If fetching is set to false exit.
-    isFetching=true; //when enter function, browser starts fetching for the first
+    if (isFetching) return; // Exit if a fetch is already in progress
+    
+    isFetching=true; 
     if (page == null){ //stop loading if nextPage is null
         return;
     } else if(page != null && keyword === "") {
@@ -120,7 +117,7 @@ async function getCards() {
     } catch (error) {
         console.error('Error fetching cards:', error);
     } finally{
-        isFetching=false; 
+        isFetching=false; //Set to false to prevent fast scrolling 
     }
 
 }
@@ -133,7 +130,7 @@ getCards().then(() => {
                     await getCards();
                     observer.unobserve(entries[0].target);
                     observer.observe(document.querySelector("footer"));
-                },2000);
+                },0);
 
             }
         },
