@@ -70,7 +70,9 @@ async function getCards() {
     try {
         const response = await fetch(src);
         const data = await response.json();
+        const nextPage=data.nextPage
         let result = data.data;
+        // console.log("here's the result:",result);
         let allCard = document.querySelectorAll(".allcard")
 
         for (let i = 0; i < Math.min(12, result.length); i++) {
@@ -113,7 +115,8 @@ async function getCards() {
         if (result.length < 12 || page >= 5) {
             fetching = false;
         } else {
-            page++;
+            page=nextPage;
+            // console.log("next page is:",page);
         }
     } catch (error) {
         console.error('Error fetching cards:', error);
