@@ -41,7 +41,6 @@ document.addEventListener("click", (event) => {
     if (event.target.classList.contains("station")) {
         keyword = event.target.textContent;
         document.querySelector(".spot-input").value = keyword;
-        console.log(keyword);
         page = 0;
         document.querySelector(".allcard").innerHTML = "";
         getCards();
@@ -57,8 +56,7 @@ document.getElementById("search-btn").addEventListener("click", () => {
 });
 
 async function getCards() {
-    if (isFetching) return; // Exit if a fetch is already in progress
-
+    console.log("inside getCards:",keyword);
     isFetching = true;
     if (page == null) { //stop loading if nextPage is null
         return;
