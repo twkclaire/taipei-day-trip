@@ -24,12 +24,10 @@ async function getMrt() {
 getMrt();
 
 document.getElementById("right-btn").addEventListener("click", () => {
-    console.log("right");
     stations.scrollLeft += 200;
 });
 
 document.getElementById("left-btn").addEventListener("click", () => {
-    console.log("left");
     stations.scrollLeft -= 200;
 });
 
@@ -43,6 +41,7 @@ document.addEventListener("click", (event) => {
         document.querySelector(".spot-input").value = keyword;
         page = 0;
         document.querySelector(".allcard").innerHTML = "";
+        console.log("Station clicked, fetching cards for keyword:", keyword);
         getCards();
     }
 });
@@ -51,12 +50,14 @@ document.getElementById("search-btn").addEventListener("click", () => {
     keyword = getKeyword();
     page = 0;
     document.querySelector(".allcard").innerHTML = ""; //erase all cards
+    console.log("Search button clicked, fetching cards for keyword:", keyword);
     getCards();
 
 });
 
 async function getCards() {
-    console.log("inside getCards:",keyword);
+    console.log("Fetching cards for page:", page, "with keyword:", keyword);
+
     isFetching = true;
     if (page == null) { //stop loading if nextPage is null
         return;
@@ -115,7 +116,9 @@ async function getCards() {
     } catch (error) {
         console.error('Error fetching cards:', error);
     } finally {
-        isFetching = false; //Set to false to prevent fast scrolling 
+        isFetching = false; //Set to false to prevent fast scrolling
+        console.log("Finished fetching cards.");
+ 
     }
 
 }
@@ -130,16 +133,18 @@ const debounce = (mainFunction, delay) => {
     };
 };
 
-const debouncedGetCards = debounce(getCards, 1000);
+const debouncedGetCards = debounce(getCards, 300);
 
 document.addEventListener("DOMContentLoaded", () => {
     getCards().then(() => {
         const observer = new IntersectionObserver(
-            async function (entries, observer) {
-                if (entries[0].isIntersecting) {
-                    await debouncedGetCards();
-                    observer.unobserve(entries[0].target);
-                    observer.observe(document.querySelector("footer"));
+            function (entries, observer) {
+                if (entries[0].isIntersecting && page!=null) {
+                    console.log("Footer intersecting, loading more cards...");
+                    debouncedGetCards();
+                    
+                }else{
+                    return;
                 }
             },
             {
