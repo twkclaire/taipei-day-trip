@@ -1,7 +1,7 @@
 let page = 0;
 let src = "";
 let keyword = "";
-let isFetching=false; 
+let isFetching = false;
 const stations = document.querySelector(".stations");
 
 async function getMrt() {
@@ -58,11 +58,11 @@ document.getElementById("search-btn").addEventListener("click", () => {
 
 async function getCards() {
     if (isFetching) return; // Exit if a fetch is already in progress
-    
-    isFetching=true; 
-    if (page == null){ //stop loading if nextPage is null
+
+    isFetching = true;
+    if (page == null) { //stop loading if nextPage is null
         return;
-    } else if(page != null && keyword === "") {
+    } else if (page != null && keyword === "") {
         src = `/api/attractions?page=${page}`;
     } else {
         src = `/api/attractions?page=${page}&keyword=${keyword}`;
@@ -116,30 +116,41 @@ async function getCards() {
 
     } catch (error) {
         console.error('Error fetching cards:', error);
-    } finally{
-        isFetching=false; //Set to false to prevent fast scrolling 
+    } finally {
+        isFetching = false; //Set to false to prevent fast scrolling 
     }
 
 }
 
-getCards().then(() => {
-    const observer = new IntersectionObserver(
-        async function (entries, observer) {
-            if (entries[0].isIntersecting) {
-                setTimeout(async () => {
-                    await getCards();
+const debounce = (mainFunction, delay) => {
+    let timer;
+    return function (...args) {
+        clearTimeout(timer);
+        timer = setTimeout(() => {
+            mainFunction(...args);
+        }, delay);
+    };
+};
+
+const debouncedGetCards = debounce(getCards, 1000);
+
+document.addEventListener("DOMContentLoaded", () => {
+    getCards().then(() => {
+        const observer = new IntersectionObserver(
+            async function (entries, observer) {
+                if (entries[0].isIntersecting) {
+                    await debouncedGetCards();
                     observer.unobserve(entries[0].target);
                     observer.observe(document.querySelector("footer"));
-                },0);
-
+                }
+            },
+            {
+                rootMargin: '10px',
+                threshold: 0.2,
             }
-        },
-        {
-            rootMargin: '10px',
-            threshold: 0.2,
-        }
-    );
-    observer.observe(document.querySelector("footer"));
+        );
+        observer.observe(document.querySelector("footer"));
+    });
 });
 
 
