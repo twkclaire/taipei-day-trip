@@ -44,7 +44,7 @@ document.addEventListener("click", (event) => {
         document.querySelector(".spot-input").value = keyword;
         page = 0;
         document.querySelector(".allcard").innerHTML = "";
-        console.log("Station clicked, fetching cards for keyword:", keyword);
+        // console.log("Station clicked, fetching cards for keyword:", keyword);
         getCards();
     }
 });
@@ -54,7 +54,7 @@ document.getElementById("search-btn").addEventListener("click", () => {
     keyword = getKeyword();
     page = 0;
     document.querySelector(".allcard").innerHTML = ""; //erase all cards
-    console.log("Search button clicked, fetching cards for keyword:", keyword);
+    // console.log("Search button clicked, fetching cards for keyword:", keyword);
     getCards();
 
 });
@@ -62,7 +62,7 @@ document.getElementById("search-btn").addEventListener("click", () => {
 
 //dynamic rendering cards 
 async function getCards() {
-    console.log("getCards() Fetching cards for page:", page, "with keyword:", keyword);
+    // console.log("getCards() Fetching cards for page:", page, "with keyword:", keyword);
 
     isFetching = true;
     if (page == null) { //stop loading if nextPage is null
@@ -123,7 +123,7 @@ async function getCards() {
         console.error('Error fetching cards:', error);
     } finally {
         isFetching = false; //Set to false to prevent fast scrolling
-        console.log("getCard() finally clause: Finished fetching cards.");
+        // console.log("getCard() finally clause: Finished fetching cards.");
  
     }
 
@@ -135,15 +135,15 @@ let isLoading = false;
 getCards().then(() => {
     const observer = new IntersectionObserver(
         function (entries, observer) {
-        if (page==0) {
+        if (page==0) { //for keyword search, prevent double fetching
             return; 
         }else if (entries[0].isIntersecting && page!=null){
             if (isLoading){
-                console.log("loding is still in progress")
+                // console.log("loding is still in progress")
                 return;
             }else{
                 isLoading= true; 
-                console.log("Now load new cards");
+                // console.log("Now load new cards");
                 getCards().then(()=>{
                 isLoading= false; 
                 })
@@ -158,11 +158,11 @@ getCards().then(() => {
         }
     );
     observer.observe(document.querySelector("footer"));
-    console.log("set up new observation here");
+    // console.log("set up new observation here");
 })
-.then(()=>{
-    console.log("exit getCards");
-})
+// .then(()=>{
+//     console.log("exit getCards");
+// })
 
 
 
