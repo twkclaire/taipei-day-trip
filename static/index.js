@@ -135,7 +135,9 @@ let isLoading = false;
 getCards().then(() => {
     const observer = new IntersectionObserver(
         function (entries, observer) {
-        if (entries[0].isIntersecting && page!=null) {
+        if (page==0) {
+            return; 
+        }else if (entries[0].isIntersecting && page!=null){
             if (isLoading){
                 console.log("loding is still in progress")
                 return;
@@ -147,8 +149,8 @@ getCards().then(() => {
                 })
             }
         }else{
-                return;
-            }
+            return;
+        }
        
         },
         {
