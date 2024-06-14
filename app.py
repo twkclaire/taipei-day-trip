@@ -1,17 +1,22 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
 import mysql.connector
+from fastapi.staticfiles import StaticFiles
+from mysql.connector.pooling import MySQLConnectionPool
 
-mydb = mysql.connector.connect(
-  host="localhost",
-  user="root",
-  password="jmhg42thSQL!",
-  database="daytrip"
-)
 
-mycursor = mydb.cursor()
+dbconfig = {
+    "host": "localhost",
+    "user": "root",
+    "password": "jmhg42thSQL!",
+    "database": "daytrip"
+}
+
+cnxpool = MySQLConnectionPool(pool_name="mypool", pool_size=20, **dbconfig)
+
 
 app=FastAPI()
+app.mount("/static", StaticFiles(directory="static"), name="static")
 
 # Static Pages (Never Modify Code in this Block)
 @app.get("/", include_in_schema=False)
@@ -30,6 +35,8 @@ async def thankyou(request: Request):
 @app.get("/api/attraction/{attractionId}")
 async def get＿attractionId(attractionId:int):
 	try:
+		db = cnxpool.get_connection()
+		mycursor = db.cursor()
 		sql=("SELECT * FROM attractions WHERE id=%s")
 		sql_data=(attractionId,)
 		mycursor.execute(sql,sql_data)
@@ -62,13 +69,16 @@ async def get＿attractionId(attractionId:int):
 			status_code=500, 
 			content={"error":True, "message":"伺服器內部錯誤"}
 			)
-
+	finally:
+		db.close()
 
 
 
 @app.get("/api/mrts")
 async def get＿mrts():
 	try:
+		db = cnxpool.get_connection()
+		mycursor = db.cursor()
 		mycursor.execute("SELECT mrt FROM attractions GROUP BY mrt ORDER BY COUNT(id) DESC;")
 		mrt_result=mycursor.fetchall()
 		mrt_list=[]
@@ -81,6 +91,8 @@ async def get＿mrts():
 			status_code=500, 
 			content={"error":True, "message":"伺服器內部錯誤"}
 			)
+	finally:
+		db.close()
 
 
 @app.get("/api/attractions")
@@ -92,17 +104,23 @@ async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = No
 		start =(page -1)* 12 +12
 
 	try:
+		db = cnxpool.get_connection()
+		mycursor = db.cursor()
 		if keyword is None:
 
-			sql=("SELECT * FROM attractions ORDER BY id LIMIT 12 OFFSET %s")
+			sql=("SELECT * FROM attractions ORDER BY id LIMIT 13 OFFSET %s")
 			sql_data=(start,)
 			mycursor.execute(sql,sql_data)
 			all_attractions = mycursor.fetchall()
+			num_result=len(all_attractions)
+
 		else: 
-			sql=("SELECT * FROM attractions WHERE name LIKE %s OR mrt = %s ORDER BY id LIMIT 12 OFFSET %s")
+			sql=("SELECT * FROM attractions WHERE name LIKE %s OR mrt = %s ORDER BY id LIMIT 13 OFFSET %s")
 			sql_data=["%"+keyword+"%",keyword,start]
 			mycursor.execute(sql,sql_data)
 			all_attractions=mycursor.fetchall()
+			num_result=len(all_attractions)
+
 		result=[]
 		for attraction in all_attractions:
 				data={
@@ -120,8 +138,7 @@ async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = No
 				}
 
 				result.append(data)
-		item_num=len(all_attractions)
-		if item_num == 12:	
+		if num_result == 13:	
 			nextPage=page+1	
 		else:
 			nextPage=None
@@ -132,6 +149,31 @@ async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = No
 			status_code=500, 
 			content={"error":True, "message":"伺服器內部錯誤"}
 			)
+	finally:
+		db.close()
 
 
 
+# def get_connection():
+#     connection = pooling.MySQLConnectionPool(
+#         pool_name = "python_pool",
+#         pool_size = 20,
+#         pool_reset_session = True,
+#         host = 'localhost',
+#         user = mysql_user,
+#         password = mysql_pwd,
+#         database = mysql_db
+#         )
+#     conn = connection.get_connection()
+#     return conn
+
+# from mysql.connector import pooling
+
+# dbconfig = {
+#     "host": "localhost",
+#     "user": "root",
+#     "password": "jmhg42thSQL!",
+#     "database": "daytrip"
+# }
+
+# mydb_pool = pooling.MySQLConnectionPool(pool_name="mypool", pool_size=5, **dbconfig)
