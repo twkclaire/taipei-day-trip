@@ -66,6 +66,7 @@ async function getCards() {
 
     isFetching = true;
     if (page == null) { //stop loading if nextPage is null
+        console.log(page)
         return;
     } else if (page != null && keyword === "") {
         src = `/api/attractions?page=${page}`;
@@ -136,9 +137,11 @@ getCards().then(() => {
     const observer = new IntersectionObserver(
         function (entries, observer) {
         if (page==0) { //for keyword search, prevent double fetching
+            // console.log(page);
             return; 
         }else if (entries[0].isIntersecting && page!=null){
             if (isLoading){
+                
                 // console.log("loding is still in progress")
                 return;
             }else{
@@ -154,7 +157,7 @@ getCards().then(() => {
        
         },
         {
-            threshold: 1,
+            threshold: 0.2,
         }
     );
     observer.observe(document.querySelector("footer"));
