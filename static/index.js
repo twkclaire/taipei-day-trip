@@ -88,7 +88,8 @@ async function getCards() {
             cardWrap.addEventListener("click",function(){
                 let id=result[i].id;
                 spotUrl=`http://18.199.186.172:8000/attraction/${id}`;
-                window.location=spotUrl;
+                console.log('Navigating to:', spotUrl);
+                window.location.href=spotUrl;
                 // console.log(spotUrl);
             })
 
