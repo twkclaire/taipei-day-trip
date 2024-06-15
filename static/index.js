@@ -78,12 +78,19 @@ async function getCards() {
         const data = await response.json();
         const nextPage = data.nextPage
         let result = data.data;
+        // console.log(result);
 
         let allCard = document.querySelectorAll(".allcard")
 
         for (let i = 0; i < Math.min(12, result.length); i++) {
             let cardWrap = document.createElement('div');
             cardWrap.className = "card-wrap";
+            cardWrap.addEventListener("click",function(){
+                let id=result[i].id;
+                spotUrl=`http://127.0.0.1:8000/attraction/${id}`;
+                window.location=spotUrl;
+                // console.log(spotUrl);
+            })
 
             let imgWrap = document.createElement('div');
             imgWrap.className = "img-wrap";
@@ -116,6 +123,7 @@ async function getCards() {
 
             cardWrap.appendChild(imgWrap);
             allCard[0].appendChild(cardWrap);
+
 
         }
         page = nextPage;
