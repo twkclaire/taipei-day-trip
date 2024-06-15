@@ -87,7 +87,7 @@ async function getCards() {
             cardWrap.className = "card-wrap";
             cardWrap.addEventListener("click",function(){
                 let id=result[i].id;
-                spotUrl=`http://127.0.0.1:8000/attraction/${id}`;
+                spotUrl=`http://18.199.186.172/:8000/attraction/${id}`;
                 window.location=spotUrl;
                 // console.log(spotUrl);
             })
