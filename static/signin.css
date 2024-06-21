@@ -1,0 +1,102 @@
+*{
+    box-sizing: border-box;  
+}
+.body{
+    font-size:16px;
+    /* color:#666666; */
+
+}
+
+.popup-wrap{
+    margin:60px auto; 
+}
+dialog{
+    border-color: transparent;
+    border: 0;
+    border-radius: 5px;
+}
+dialog::backdrop {
+    background-color: rgba(0, 0, 0, 0.5);
+  }
+.signup, .signin{
+    background-color:#FFFFFF;
+    width:340px;
+    /* height:275px; */
+    border-radius: 5px;
+    margin-left: auto;
+    margin-right:auto;
+
+}
+
+.pop-form-wrap{
+    display:flex;
+    flex-direction: column;
+    gap:10px;
+    text-align: center;
+    position: relative;
+}
+.close {
+    position: absolute;
+    top:25px;
+    right:30px;
+    cursor: pointer;
+    transition: transform 0.5s;
+}
+.close:hover{
+    transform: scale(1.3);
+}
+.pop-form-title{
+    border-top: 5px solid #448899;
+    font-size: 24px;
+    color:#666666;
+    font-weight: 600;
+    padding-top: 10px; 
+}
+
+.email, .password, .name-r, .email-r, .password-r{
+    width:300px;
+    padding:1em 5px;
+    border:0; 
+    margin: 3px auto;
+    border-radius: 5px;
+    border:solid #CCCCCC;
+    height:45px;
+ 
+}
+.log-in, .sign-up{
+    width:300px;
+    padding:1em 5px; 
+    border:0;
+    margin: 3px auto;
+    border-radius: 5px;
+    color:white;
+    background-color: #448899;
+    font-size:16px;
+    font-weight: 600px;
+  
+}
+.note{
+    color:#666666;
+    margin-bottom: 10px;
+}
+
+.break{
+    width:100px;
+    height:100px
+}
+.clickhere{
+    text-decoration: none;
+    color:#666666;
+    cursor: pointer;
+}
+.result{
+    color:#666666;
+    margin-bottom: 10px;
+}
+
+@media only screen and (max-width: 600px) {
+    .signup, .signin{
+        width:320px;
+    }
+
+}

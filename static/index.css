@@ -31,6 +31,7 @@ header{
     width:100%; 
 }  
 
+
 .flex-view{
     max-width: 1200px;
     display:flex;
@@ -51,7 +52,11 @@ a {
 .item{
     color:#666666;
     font-size:16px; 
-    font-weight:600; 
+    font-weight:600;
+    cursor: pointer; 
+}
+.hidden{
+    display:none;  
 }
 .hero-wrap{
     display: flex;

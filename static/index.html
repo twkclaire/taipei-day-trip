@@ -1,60 +1,128 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Index</title>
+    <link rel="stylesheet" href="/static/index.css" />
+    <link rel="stylesheet" href="/static/signin.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Index</title>
-  <link rel="stylesheet" href="/static/index.css">
-</head>
+  <body>
+    <header>
+      <div class="flex-view">
+        <a href="/static/index.html" class="left">
+          <span class="title">台北一日遊</span>
+        </a>
+        <div class="right">
+          <div class="menu">
+            <a class="item" id="booktripItem">預定行程</a>
+            <a class="item hidden" id="signinItem">登入</a> /
+            <a class="item hidden" id="signupItem">註冊</a>
+            <a class="item hidden" id="signoutItem" onclick="deleteToken()">登出系統</a>
+          </div>
+        </div>
+      </div>
+    </header>
 
-<body>
-  <header>
-    <div class="flex-view">
-      <a href="/static/index.html" class="left">
-        <span class="title">台北一日遊</span>
-      </a>
-      <div class="right">
-        <div class="menu">
-          <a href="#" class="item">預定行程</a>
-          <a href="#" class="item">登入</a> /
-          <a href="#" class="item">註冊</a>
+    <div class="hero-wrap" style="background-image: url('/static/image/welcome.png')">
+      <div class="hero-text-wrap">
+        <div class="hero-text">輕鬆享受台北一日悠閒</div>
+        <div class="hero-des">探索每個角落，體驗城市的深度旅遊行程</div>
+        <div class="search-outer-wrap">
+          <div class="search-wrap">
+            <input class="spot-input" type="text" placeholder="輸入景點名稱查詢" />
+            <button type="submit" class="search-btn" id="search-btn">
+              <img src="/static/image/search.svg" />
+            </button>
+          </div>
         </div>
       </div>
     </div>
-  </header>
 
-  <div class="hero-wrap" style="background-image: url('/static/image/welcome.png');">
-    <div class="hero-text-wrap">
-      <div class="hero-text">輕鬆享受台北一日悠閒</div>
-      <div class="hero-des">探索每個角落，體驗城市的深度旅遊行程</div>
-      <div class="search-outer-wrap">
-        <div class="search-wrap">
-          <input class="spot-input" type="text" placeholder="輸入景點名稱查詢">
-          <button type="submit" class="search-btn" id="search-btn"><img src="/static/image/search.svg"></button>
-        </div>
+    <dialog class="popup-wrap" id="signupd">
+      <div class="signup">
+        <form class="pop-form-wrap" onsubmit="registerUser(event)">
+          <div class="pop-form-title">註冊會員帳號</div>
+          <span class="close" id="signupclose">
+            <img src="/static/image/close.svg" />
+          </span>
+          <input placeholder="輸入姓名" class="name-r" id="namere" required />
+          <input placeholder="輸入電子郵件" class="email-r" id="emailre" type="email"required />
+          <input
+            placeholder="輸入密碼"
+            class="password-r"
+            id="passwordre"
+            type="password"
+            required
+          />
+          <button class="sign-up" type="submit">
+            註冊新帳號
+          </button>
+          <div class="note" id="notere">
+            已經有帳戶了？
+            <a class="clickhere" id="signinclick" onclick="signIn()">
+              點此登入
+            </a>
+          </div>
+          <div class="result" id="resultre"></div>
+        </form>
       </div>
-    </div>
-  </div>
+    </dialog>
 
-  <div class="body-wrap">
-    <div class="bar-wrap">
-      <button class="btn" id="left-btn"><img src="/static/image/left.svg"></button>
-      <div class="station-wrap">
-        <div class="stations">
-        </div>
+    <dialog class="popup-wrap" id="signind">
+      <div class="signin">
+        <form class="pop-form-wrap" onsubmit="userSignIn(event)">
+          <div class="pop-form-title">登入會員帳號</div>
+          <span class="close" id="signinclose">
+            <img src="/static/image/close.svg" />
+          </span>
+          <input placeholder="輸入電子信箱" class="email" id="email" type="email" required />
+          <input
+            placeholder="輸入密碼"
+            class="password"
+            id="password"
+            type="password"
+            required
+          />
+          <button class="log-in" type="submit">
+            登入帳戶
+          </button>
+          <div class="note">
+            還沒有帳戶？
+            <a class="clickhere" id="signupclick" onclick="signUp()">
+              點此註冊
+            </a>
+          </div>
+          <div class="result" id="resultsign"></div>
+        </form>
       </div>
-      <button class="btn" id="right-btn"><img src="/static/image/right.svg"></button>
+    </dialog>
+
+    <div class="body-wrap">
+      <div class="bar-wrap">
+        <button class="btn" id="left-btn">
+          <img src="/static/image/left.svg" />
+        </button>
+        <div class="station-wrap">
+          <div class="stations"></div>
+        </div>
+        <button class="btn" id="right-btn">
+          <img src="/static/image/right.svg" />
+        </button>
+      </div>
+
+      <div class="allcard"></div>
     </div>
 
-    <div class="allcard">
-    </div>
+    <footer>
+      <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
+    </footer>
+  </body>
+</html>
+  
 
-  </div>
-  <footer>
-    <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
-  </footer>
-  <script src="/static/index.js"></script>
-</body>
-
+    <script src="/static/index.js"></script>
+    <script src="/static/signin.js"></script>
+  </body>
 </html>
