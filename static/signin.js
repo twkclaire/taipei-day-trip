@@ -19,7 +19,7 @@ window.onload = function checkSigninStatus() {
   let token = localStorage.getItem("token");
   console.log("Access token:", token);
   if (token) {
-    fetch("http://127.0.0.1:8000/api/user/auth", {
+    fetch("api/user/auth", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -62,7 +62,7 @@ function userSignIn(event) {
   var passwordSign = document.getElementById("password").value;
   var signInResult=document.getElementById("resultsign");
 
-  const url = "http://127.0.0.1:8000/api/user/auth";
+  const url = "/api/user/auth";
   fetch(url, {
     method: "PUT",
     headers: {
@@ -103,7 +103,7 @@ function registerUser(event) {
   var resultRe = document.getElementById("resultre");
   // console.log(nameRe, emailRe, passwordRe);
 
-  const url = "http://127.0.0.1:8000/api/user";
+  const url = "/api/user";
   fetch(url, {
     method: "POST",
     headers: {
