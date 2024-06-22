@@ -47,7 +47,7 @@ window.onload = function checkSigninStatus() {
         signout.classList.add("hidden")
       });
   } else {
-    console.error("Token not found");
+    // console.error("Token not found");
     signin.classList.remove("hidden");
     signup.classList.remove("hidden");
     signout.classList.add("hidden")
