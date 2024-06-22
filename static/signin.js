@@ -9,7 +9,7 @@ const signout = document.getElementById("signoutItem");
 //user sign up path
 function deleteToken() {
   let token = localStorage.removeItem("token");
-  console.log("user signed out");
+  // console.log("user signed out");
   window.location.reload();
   return token;
 }
@@ -17,9 +17,9 @@ function deleteToken() {
 
 window.onload = function checkSigninStatus() {
   let token = localStorage.getItem("token");
-  console.log("Access token:", token);
+  // console.log("Access token:", token);
   if (token) {
-    fetch("api/user/auth", {
+    fetch("/api/user/auth", {
       method: "GET",
       headers: { Authorization: `Bearer ${token}` },
     })
@@ -34,14 +34,14 @@ window.onload = function checkSigninStatus() {
         });
       })
       .then((data) => {
-        console.log("Fetch successful:", data);
+        // console.log("Fetch successful:", data);
         signin.classList.add("hidden");
         signup.classList.add("hidden"); //Show signout only
         signout.classList.remove("hidden")
 
       })
       .catch((err) => {
-        console.error("Error:", err);
+        // console.error("Error:", err);
         signin.classList.remove("hidden");
         signup.classList.remove("hidden");
         signout.classList.add("hidden")
@@ -62,8 +62,8 @@ function userSignIn(event) {
   var passwordSign = document.getElementById("password").value;
   var signInResult=document.getElementById("resultsign");
 
-  const url = "/api/user/auth";
-  fetch(url, {
+  const authUrl = "/api/user/auth";
+  fetch(authUrl, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
@@ -77,13 +77,12 @@ function userSignIn(event) {
     .then((data) => {
       if (data.token) {
         let JWTtoken = data.token;
-        console.log(JWTtoken);
+        // console.log(JWTtoken);
         localStorage.setItem("token", JWTtoken);
-        console.log("token stored in localstorage");
         signInResult.innerText = "登入成功！！";
         window.location.reload();
       } else {
-        console.log(data.message);
+        // console.log(data.message);
         signInResult.innerText=data.message;
 
       }
@@ -103,8 +102,8 @@ function registerUser(event) {
   var resultRe = document.getElementById("resultre");
   // console.log(nameRe, emailRe, passwordRe);
 
-  const url = "/api/user";
-  fetch(url, {
+  const userUrl = "/api/user";
+  fetch(userUrl, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
