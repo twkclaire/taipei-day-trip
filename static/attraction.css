@@ -50,7 +50,11 @@ a {
 .item{
     color:#666666;
     font-size:16px; 
-    font-weight:600; 
+    font-weight:600;
+    cursor: pointer; 
+}
+.hidden{
+    display:none;  
 }
 .gallery-form-wrap{
     display:flex;
