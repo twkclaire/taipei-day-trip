@@ -126,7 +126,9 @@ input[type="text" i] {
     border:0;
     border-radius: 0 5px 5px 0; 
 }
-
+.search-btn:hover{
+    background-color: #366d7a;
+}
 .bar-wrap{
     display:flex;
     flex-direction: row;
@@ -167,6 +169,9 @@ input[type="text" i] {
     font-weight: 600;
 }
 
+.station:hover, .item:hover{
+    font-weight:800; 
+}
 .all-card, .allcard {
     display: grid;
     grid-template-columns: repeat(auto-fill, minmax(270px, 1fr));
@@ -222,6 +227,17 @@ input[type="text" i] {
 
   .search-btn, .bar-wrap, .btn{
     cursor:pointer;
+}
+.btn{   
+    height:32px;
+    border-radius: 50%; 
+}
+.btn:hover{
+    background-color:#bcbbbb;
+    
+}
+.arrow{
+    opacity:0.8;
 }
 footer{
     background-color: #757575;

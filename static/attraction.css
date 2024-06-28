@@ -35,7 +35,7 @@ header{
     justify-content: space-between;
     margin: auto;
     align-items: center;
-    padding-top:5px;
+    padding:5px 5px 0 5px;
     width:100% 
 }
 a {
@@ -52,6 +52,9 @@ a {
     font-size:16px; 
     font-weight:600;
     cursor: pointer; 
+}
+.item:hover{
+    font-weight:800; 
 }
 .hidden{
     display:none;  
@@ -87,7 +90,8 @@ a {
     cursor: pointer;
     position:absolute;
     top:50%;
-    opacity:0.7;
+    opacity:0.5;
+    
 
 }
 
@@ -97,6 +101,11 @@ a {
   }
 .prev {
     left: 2.5%;
+}
+
+.next:hover, .prev:hover{
+    opacity:0.8; 
+
 }
 .dots-wrap{
     position: absolute;
@@ -220,6 +229,9 @@ input[type="radio"]:checked + label::before {
     border-radius: 5px;
     padding:5px;
     cursor:pointer;
+}
+.formbtn:hover{
+    background-color: #366d7a;
 }
 hr{
     display: block;
