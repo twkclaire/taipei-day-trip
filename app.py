@@ -52,30 +52,6 @@ async def thankyou(request: Request):
 
 
 
-# class CreateBooking(BaseModel):
-# 	attractionId:int
-# 	date:str
-# 	time:str
-# 	price:int
-
-# @app.post("api/booking")
-# async def booking(booking:CreateBooking):
-# 	if booking:
-# 		try:
-# 			db =cnxpool.get_connection()
-# 			mycursor = db.cursor()
-# 			sql = "INSERT INTO booking (attractionId, date, time, price) VALUES (%s, %s, %s,%s)"
-# 			val = (CreateBooking.attractionId, CreateBooking.date, CreateBooking.time, CreateBooking.price)
-# 			mycursor.execute(sql, val)
-# 			db.commit()
-# 			return {"ok":True}
-# 		except Exception:
-# 			return JSONResponse(
-# 				status_code=500, 
-# 				content={"error":True, "message":"伺服器內部錯誤"}
-# 				)
-# 		finally:
-# 			db.close()		
 
 class UserLogIn(BaseModel):
 	email:str
@@ -108,31 +84,157 @@ def get_password_hash(password):
 
 def verify_password(plain_password, hash_password):
 	return bcrypt_context.verify(plain_password,hash_password)
-			
-#用戶資訊運回傳
-@app.get("/api/user/auth")
-async def getUser(request:Request):
-	token = request.headers.get('Authorization')
+
+
+ #("CREATE TABLE booking (id BIGINT PRIMARY KEY AUTO_INCREMENT, attractionId BIGINT NOT NULL, date DATE NOT NULL, time VARCHAR(255) NOT NULL, price BIGINT NOT NULL)")
+class CreateBooking(BaseModel):
+	attractionId:int
+	date:str
+	time:str
+	price:int
+
+# def decodeJWT(request:Request):
+# 	token = request.headers.get('Authorization')
+	
+# 	if token:
+# 		try:
+# 			token = token.replace('Bearer ', '')
+# 			# print(token)
+# 			decoded_jwt=jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+# 			return decoded_jwt
+# 		except jwt.ExpiredSignatureError:
+# 			raise HTTPException(status_code=400,detail="Token expired")
+# 		except jwt.InvalidTokenError:
+# 			raise HTTPException(status_code=400,detail="Invalid Token")
+# 	else:
+# 		raise HTTPException(status_code=403, detail="未登入系統，拒絕存取")
+
+
+def decodeJWT(request: Request):
+    token = request.headers.get('Authorization')
+
+    if token:
+        try:
+            token = token.replace('Bearer ', '')
+            decoded_jwt = jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
+            return decoded_jwt
+        except jwt.ExpiredSignatureError:
+            return JSONResponse(status_code=400, content={"error": True, "message": "Token expired"})
+        except jwt.InvalidTokenError:
+            return JSONResponse(status_code=400, content={"error": True, "message": "Invalid Token"})
+    else:
+        return JSONResponse(status_code=403, content={"error": True, "message": "未登入系統，拒絕存取"})
+
+@app.post("/api/booking")
+async def booking(booking:CreateBooking, token =Depends(decodeJWT)): #make sure one account can only have one booking. if booking existed, use alter syntax for sql
+	if isinstance(token, JSONResponse):
+		return token
 	# print(token)
-	if token:
+	if booking:
 		try:
-			token = token.replace('Bearer ', '')
-			# print("inside the if", token)
-			decoded_jwt=jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-			# print(decoded_jwt)
-			return { "data": dict(list(decoded_jwt.items())[0: 3]) } #Using slicing on dictionary item list so expiry date isn't included
-		except jwt.ExpiredSignatureError:
+			db =cnxpool.get_connection()
+			mycursor = db.cursor()
+			sql=("SELECT * FROM booking WHERE userId = %s")
+			val=(token["id"],)
+			mycursor.execute(sql,val)
+			result=mycursor.fetchone()
+			if result:
+				sql = "UPDATE booking SET attractionId=%s, date=%s, time=%s, price=%s WHERE userId=%s"
+				val = (booking.attractionId, booking.date, booking.time, booking.price,token["id"])
+			else: 
+				sql = "INSERT INTO booking (userId, attractionId, date, time, price) VALUES (%s, %s, %s, %s,%s)"
+				val = (token["id"],booking.attractionId, booking.date, booking.time, booking.price)
+			mycursor.execute(sql, val)
+			db.commit()
+			return {"ok":True}
+		except Exception:
 			return JSONResponse(
-				status_code=400,
-				content={"error":True, "message":"Token has expired"}
-			)
-		except jwt.InvalidTokenError:
-			return JSONResponse(
-				status_code=400,
-				content={"error":True, "message": "Invalid token"}
-			)
+				status_code=500, 
+				content={"error":True, "message":"伺服器內部錯誤"}
+				)
+		finally:
+			db.close()
 	else:
-		return{"Please:":"Sign in"}
+		raise HTTPException(status_code=400, detail="Invalid booking details")	
+
+
+				
+
+
+@app.delete("/api/booking")
+async def deletebooking(token =Depends(decodeJWT)):
+	if isinstance(token, JSONResponse):
+		return token
+	userId=token["id"]
+	try:
+		db =cnxpool.get_connection()
+		mycursor = db.cursor()
+		sql="DELETE FROM booking WHERE userId=%s"
+		sql_data=(userId,)
+		mycursor.execute(sql,sql_data)
+		db.commit()
+		return {"ok":True}
+	except Exception:
+		return JSONResponse(
+			status_code=500, 
+			content={"error":True, "message":"伺服器內部錯誤"}
+			)	
+	finally:
+		db.close()
+
+@app.get("/api/booking")
+async def getbooking(token =Depends(decodeJWT)):
+	if isinstance(token, JSONResponse):
+		return token
+	userId=token["id"]
+	# print(token) 
+	try:
+		db =cnxpool.get_connection()
+		mycursor = db.cursor()
+		sql="SELECT * FROM attractions INNER JOIN booking on attractions.id = booking.attractionId WHERE userId=%s"
+		sql_data=(userId,)
+		mycursor.execute(sql,sql_data)
+		result=mycursor.fetchone()
+		if result is None:
+			return{"data":None}
+		else:
+			return {
+				"data": {
+					"attraction": {
+					"id": result[0],
+					"name": result[1],
+					"address": result[4],
+					"image": result[9].split(",")[0],
+					},
+					"date": result[13],
+					"time": result[14],
+					"price": result[15]
+				}
+				}
+	except Exception:
+		return JSONResponse(
+			status_code=500, 
+			content={"error":True, "message":"伺服器內部錯誤"}
+			)	
+	finally:
+		db.close()
+
+			
+###分隔線######分隔線######分隔線######分隔線######分隔線######分隔線######分隔線######分隔線###
+
+
+
+
+
+
+
+@app.get("/api/user/auth")
+async def getUser(token:dict =Depends(decodeJWT)):
+	if isinstance(token, JSONResponse):
+		return token
+	return { "data": dict(list(token.items())[0: 3]) } #Using slicing on dictionary item list so expiry date isn't included
+
+			
 
 
 
@@ -336,4 +438,3 @@ async def get＿attractions(page: int= Query(...,gt=-1), keyword:str | None = No
 		db.close()
 
 #mycursor.execute("CREATE TABLE member (id BIGINT PRIMARY KEY AUTO_INCREMENT, name VARCHAR(255) NOT NULL, email VARCHAR(255) NOT NULL, password VARCHAR(255) NOT NULL)")
-
