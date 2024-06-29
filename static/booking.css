@@ -213,10 +213,14 @@ footer{
         padding:0;
 
     }
-    .itinerary-wrap{
+    /* .itinerary-wrap{
         margin-right:10px;
         margin-left:10px
+    } */
+    .itinerary-wrap, .itinerary-no-bookingwrap {
+        margin: 50px 10px 0px 10px;
     }
+
     .itinerary-img{
         width:340px;
     }
@@ -237,19 +241,8 @@ footer{
         top:-15px;
     }
 
-    /* .gallery{
-        border-radius: 0;
-        height:350px !important; 
-    }
-    .form, .form-title, .cat-mrt{
-       margin-left:15px;
-       margin-right:15px;
-    } */
     hr {
         max-width: 580px;
     }
 
-    /* .detail-wrap{
-        padding:20px;
-    } */
   }
