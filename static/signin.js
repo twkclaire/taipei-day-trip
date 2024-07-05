@@ -5,6 +5,10 @@ const signup = document.getElementById("signupItem");
 const signupDialog = document.getElementById("signupd");
 const signupclose = document.getElementById("signupclose");
 const signout = document.getElementById("signoutItem");
+const bookTripItem=document.getElementById("booktripItem");
+
+
+var userName="";
 
 //user sign up path
 function deleteToken() {
@@ -27,30 +31,48 @@ window.onload = function checkSigninStatus() {
         return resp.json().then((data) => {
           if (!resp.ok) {
             throw new Error(
-              `HTTP error! status: ${resp.status}, message: ${data.message}`
+              `HTTP error! status: ${resp.status}, message: ${data.detail}`
             );
           }
-          return data;
+          userName=data.data.name
+          // console.log(data.data.name)
+          return data,userName;
         });
       })
       .then((data) => {
         // console.log("Fetch successful:", data);
         signin.classList.add("hidden");
         signup.classList.add("hidden"); //Show signout only
-        signout.classList.remove("hidden")
+        signout.classList.remove("hidden");
+        bookTripItem.classList.remove("hidden");
+        bookTripItem.addEventListener("click",()=>{
+          window.location.href="/booking";
+        })
+        // bookTripItem.href="https://www.google.com";
+        document.dispatchEvent(new CustomEvent('userSignedIn'));
 
       })
       .catch((err) => {
-        // console.error("Error:", err);
+        document.dispatchEvent(new CustomEvent('userSignedIn'));
+        console.error("Error:", err.message);
         signin.classList.remove("hidden");
         signup.classList.remove("hidden");
-        signout.classList.add("hidden")
+        signout.classList.add("hidden");
+        bookTripItem.classList.remove("hidden");
+        bookTripItem.addEventListener("click",()=>{
+          signinDialog.showModal();
+        })
       });
   } else {
-    // console.error("Token not found");
+    document.dispatchEvent(new CustomEvent('userSignedIn'));
+    console.error("Token not found");
     signin.classList.remove("hidden");
     signup.classList.remove("hidden");
-    signout.classList.add("hidden")
+    signout.classList.add("hidden");
+    bookTripItem.classList.remove("hidden");
+    bookTripItem.addEventListener("click",()=>{
+      signinDialog.showModal();
+    })
     
   }
 }
