@@ -1,11 +1,44 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Thank You</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Thank you</title>
+    <link rel="stylesheet" href="/static/thankyou.css">
 </head>
 <body>
+  <header>
+    <div class="flex-view">
+      <a href="/static/index.html" class="left">
+        <span class="title">台北一日遊</span>
+      </a>
+      <div class="right">
+          <div class="menu">
+            <a class="item" id="booktripItem">預定行程</a>
+            <a class="item" id="signoutItem" onclick="deleteToken()">/登出系統</a>
+          </div>
+      </div>
+    </div>
+  </header>  
+
+
+  <div class="booking-wrap" id="booking-wrap">
+    <div class="payment-result" id="payment-result"></div>
+    <div class="itinerary-wrap">
+      <div class="itinerary-intro" id="itinerary-intro"></div>
+      <div class="itinerary-img-text-wrap" id="itinerary-img-text-wrap">
+        <img class="itinerary-img" id="itinerary-img">
+        <div class="itinerary-text" id="itinerary-text"></div>
+      </div>
+      <div class="contact-wrap" id="contact-wrap"></div>
+    </div>
+  </div>
   
+  <footer id="footer">
+    <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
+  </footer>
+ 
+  <script src="/static/thankyou.js"></script>
+
 </body>
 </html>

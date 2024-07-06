@@ -1,14 +1,15 @@
 from fastapi import *
 from fastapi.responses import FileResponse, JSONResponse
-import mysql.connector
 from fastapi.staticfiles import StaticFiles
 from mysql.connector.pooling import MySQLConnectionPool
 from passlib.context import CryptContext 
 import time
-from typing import Dict
+from typing import Dict, Annotated
 import jwt
-from pydantic import BaseModel
-from fastapi.middleware.cors import CORSMiddleware 
+from pydantic import BaseModel, Field, EmailStr
+from fastapi.middleware.cors import CORSMiddleware
+import httpx 
+import uuid
 
 
 dbconfig = {
@@ -51,8 +52,6 @@ async def thankyou(request: Request):
 	return FileResponse("./static/thankyou.html", media_type="text/html")
 
 
-
-
 class UserLogIn(BaseModel):
 	email:str
 	password:str
@@ -93,21 +92,6 @@ class CreateBooking(BaseModel):
 	time:str
 	price:int
 
-# def decodeJWT(request:Request):
-# 	token = request.headers.get('Authorization')
-	
-# 	if token:
-# 		try:
-# 			token = token.replace('Bearer ', '')
-# 			# print(token)
-# 			decoded_jwt=jwt.decode(token, JWT_SECRET, algorithms=[JWT_ALGORITHM])
-# 			return decoded_jwt
-# 		except jwt.ExpiredSignatureError:
-# 			raise HTTPException(status_code=400,detail="Token expired")
-# 		except jwt.InvalidTokenError:
-# 			raise HTTPException(status_code=400,detail="Invalid Token")
-# 	else:
-# 		raise HTTPException(status_code=403, detail="未登入系統，拒絕存取")
 
 
 def decodeJWT(request: Request):
@@ -124,6 +108,203 @@ def decodeJWT(request: Request):
             return JSONResponse(status_code=400, content={"error": True, "message": "Invalid Token"})
     else:
         return JSONResponse(status_code=403, content={"error": True, "message": "未登入系統，拒絕存取"})
+	
+class Attraction(BaseModel):
+	id: int
+	name: str
+	address: str
+	image: str
+
+class Contact(BaseModel):
+	name:Annotated[str, Field(min_length=1)]
+	email:EmailStr
+	phone:Annotated[str, Field(min_length=1)]
+
+class Trip(BaseModel):
+	attraction:Attraction 
+	date: str
+	time: str
+
+class Order(BaseModel):
+	price:int
+	trip:Trip
+	contact:Contact
+
+class CreateOrder(BaseModel):
+	prime:str
+	order:Order 
+
+partner_key = "partner_oezzdurEpgu3bm5xrrUOYCExjsUHWQqb9nfhK7Yt5t1gIsdh38sk62sX"
+merchant_id = "tppf_twkclaire_GP_POS_2"
+
+@app.post("/api/orders")
+async def create_order(order: CreateOrder, token=Depends(decodeJWT)):
+    if isinstance(token, JSONResponse):
+        return token
+    userID = token["id"]
+
+    if order:
+        userId = userID
+        order_number = str(uuid.uuid4())
+        prime = order.prime
+        price = order.order.price
+        attractionId = order.order.trip.attraction.id
+        attractionName = order.order.trip.attraction.name
+        attractionAddress = order.order.trip.attraction.address
+        attractionImage = order.order.trip.attraction.image
+        date = order.order.trip.date
+        time = order.order.trip.time
+        name = order.order.contact.name
+        email = order.order.contact.email
+        phone = order.order.contact.phone
+        status = 1  # 1 means unpaid
+
+        try:
+            # Add order record to database before payment is executed
+            db = cnxpool.get_connection()
+            mycursor = db.cursor()
+            sql = """
+            INSERT INTO orderlist 
+            (userId, orderNumber, price, attractionId, attractionName, attractionAddress, attractionImage, date, time, name, email, phone, status) 
+            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            """
+            val = (
+                userId, order_number, price, attractionId, attractionName,
+                attractionAddress, attractionImage, date, time, name, email, phone, status
+            )
+            mycursor.execute(sql, val)
+            db.commit()
+
+            # Construct data sent to tappay
+            payment_data = {
+                "prime": prime,
+                "partner_key": partner_key,
+                "merchant_id": merchant_id,
+                "amount": price,
+                "currency": "TWD",
+                "order_number": order_number,
+                "details": "test",
+                "cardholder": {
+                    "phone_number": phone,
+                    "name": name,
+                    "email": email
+                },
+            }
+
+            # Paid by prime
+            async with httpx.AsyncClient() as client:
+                response = await client.post(
+                    "https://sandbox.tappaysdk.com/tpc/payment/pay-by-prime",
+                    json=payment_data,
+                    headers={
+                        "Content-Type": "application/json",
+                        "x-api-key": partner_key
+                    }
+                )
+                # trying to get the status so I can log success/failed message
+                if response:
+                    data = response.json()
+                    status = data.get("status")
+                    msg = data.get("msg")
+
+                    # print(status, msg)
+                    if status == 0:  # update payment status to 0, meaning paid
+                        sql = "UPDATE orderlist SET status=0 WHERE orderNumber=%s"
+                        val = (order_number,)
+                        mycursor.execute(sql, val)
+                        db.commit()
+
+                        sql = "DELETE FROM booking WHERE userId=%s"  # delete the booking history in boooking table by unique id userId
+                        sql_data = (userId,)
+                        mycursor.execute(sql, sql_data)
+                        db.commit()
+
+                        return {
+                            "data": {
+                                "number": order_number,
+                                "payment": {
+                                    "status": 0,
+                                    "message": "付款成功"
+                                }
+                            }
+                        }
+                    else: #order is created but payment is not through, this is a 200 respond.
+                        return {
+                            "data": {
+                                "number": order_number,
+                                "payment": {
+                                    "status": 1,
+                                    "message": "付款失敗"
+                                }
+                            }
+                        }
+
+
+        except Exception:
+         return JSONResponse(
+				status_code=500, 
+				content={"error":True, "message":"伺服器內部錯誤"}
+				)
+        finally:
+            mycursor.close()
+            db.close()
+
+
+
+
+
+@app.get("/api/orders/{orderNumber}")
+async def getOrderNumber(orderNumber: str, token=Depends(decodeJWT)):
+    if isinstance(token, JSONResponse):
+        return token
+    userID = token["id"]
+
+    if orderNumber:
+        try:
+            print(orderNumber)
+            db = cnxpool.get_connection()
+            mycursor = db.cursor()
+            sql = "SELECT * FROM orderlist WHERE orderNumber=%s and userId= %s"
+            val = (orderNumber.strip(), userID)
+            mycursor.execute(sql, val)
+            result = mycursor.fetchone()
+            if result:
+                # print(result)
+                return {
+                    "data": {
+                        "number": result[2],
+                        "price": result[3],
+                        "trip": {
+                            "attraction": {
+                                "id": result[4],
+                                "name": result[5],
+                                "address": result[6],
+                                "image": result[7],
+                            },
+                            "date": result[8],
+                            "time": result[9],
+                        },
+                        "contact": {
+                            "name": result[10],
+                            "email": result[11],
+                            "phone": result[12],
+                        },
+                        "status": result[13],
+                    }
+                }
+        except Exception as e:
+            # Handle the exception, e.g., logging or returning an error response
+            return {"ok": False, "error": str(e)}
+        finally:
+            mycursor.close()
+            db.close()
+
+
+
+
+            
+
+
 
 @app.post("/api/booking")
 async def booking(booking:CreateBooking, token =Depends(decodeJWT)): #make sure one account can only have one booking. if booking existed, use alter syntax for sql
@@ -220,13 +401,6 @@ async def getbooking(token =Depends(decodeJWT)):
 		db.close()
 
 			
-###分隔線######分隔線######分隔線######分隔線######分隔線######分隔線######分隔線######分隔線###
-
-
-
-
-
-
 
 @app.get("/api/user/auth")
 async def getUser(token:dict =Depends(decodeJWT)):
@@ -235,11 +409,6 @@ async def getUser(token:dict =Depends(decodeJWT)):
 	return { "data": dict(list(token.items())[0: 3]) } #Using slicing on dictionary item list so expiry date isn't included
 
 			
-
-
-
-
-
 #用戶註冊
 @app.post("/api/user")
 async def registerUser(user:UserSignup ):
