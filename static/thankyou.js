@@ -1,7 +1,12 @@
 const paymentResult=document.getElementById("payment-result")
+const bookTripItem=document.getElementById("booktripItem");
 var main="";
 var context="";
 
+
+bookTripItem.addEventListener("click",()=>{
+  window.location.href="/booking";
+})
 
 function getPaymentResult(){
 let token = localStorage.getItem("token");
@@ -81,3 +86,4 @@ let token = localStorage.removeItem("token");
 window.location.reload();
 return token;
 }
+

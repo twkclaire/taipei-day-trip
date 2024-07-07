@@ -208,7 +208,7 @@ document.getElementById('booking-form').addEventListener('submit', function(even
           return;
         }
         
-        alert('getPrime 成功');
+      //  console.log('getPrime 成功');
         var prime = result.card.prime;
         var res = JSON.stringify(result, null, 4);
         // console.log(res);
