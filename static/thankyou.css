@@ -59,27 +59,23 @@ a {
 .hidden{
     display:none;  
 }
-hr{
-    display: block;
-    width:100%;
-    max-width:1200px;
-    height: 1px;
-    border: 0;
-    border-top: 1px solid #E8E8E8;
-    margin: 2em 0;
-    padding: 0;
+
+.payment-result{
+    margin: 110px 20px 0 20px;
 }
-.booking-wrap, .no-booking-wrap{
+
+.booking-wrap {
     width:100%;
     max-width:1200px;
     margin:0 auto;
 }
-.hidden-content{
-    display:none;
+
+.payment-result{
+    font-size: 2rem;
 }
 /* first part */
 .itinerary-wrap, .itinerary-no-bookingwrap {
-    margin: 110px 20px 20px 20px;
+    margin: 30px 20px 20px 20px;
 }
 .itinerary-intro{
     padding-bottom: 20px;
@@ -107,62 +103,12 @@ hr{
     color:#448899;
     font-weight: 600;
 }
-.delete-wrap{
-    position:absolute; 
-    right:5%;
-}
-.danger{
-    cursor: pointer;
-}
- 
 
-.contact-form, .card-info{
-    display:flex;
-    flex-direction: column; 
-    justify-content: space-between;    
-    margin: 20px; 
-    line-height: 2rem;
-}
-.contact-text, .card-text, .submit-text{
-    font-weight:600;
-}
-input, .tpfield{
-    border: 1px solid lightgray;
-    border-radius: 4px;
-    width: 200px;
-    height: 38px;
-    margin: 5px 0;
-    padding:5px;
-}
-.card-number-group, .expiration-date-group, .ccv-group{
-    display: flex;
-    align-items: center;
-
-}
-.contact-warn{
-    font-weight:500;
-
-}
-.submit-wrap{
-    justify-content: end;
-    display: flex;
-    margin-right:10px;
-
-
-}
-.submit{
+.contact-wrap{
     display: flex;
     flex-direction: column;
-}
-.submit-btn{
-    width:90%;
-    color:white; 
-    background-color:#448899;
-    border-radius: 5px;
-    border-color: transparent;
-    margin-top:20px;
-    margin-bottom: 20px;
-    padding: 5px 10px;
+    gap:10px;
+    padding: 10px; 
 }
 footer{
 
@@ -197,18 +143,7 @@ footer{
     .itinerary-text {
         padding-bottom: 0px;
     }
-    .delete-wrap{
-        position: relative;
-    }
-    .danger{
-        position: absolute; 
-        right:5%;
-        top:-15px;
-        
-    }
-    hr {
-        max-width: 780px;
-    }
+
 }
 
 @media only screen and (max-width: 600px) {
@@ -218,10 +153,6 @@ footer{
         padding:0;
 
     }
-    /* .itinerary-wrap{
-        margin-right:10px;
-        margin-left:10px
-    } */
     .itinerary-wrap, .itinerary-no-bookingwrap {
         margin: 50px 10px 0px 10px;
     }
@@ -237,17 +168,7 @@ footer{
     .itinerary-text {
         padding-bottom: 0px;
     }
-    .delete-wrap{
-        position: relative;
-    }
-    .danger{
-        position: absolute; 
-        right:5%;
-        top:-15px;
-    }
 
-    hr {
-        max-width: 580px;
-    }
+
 
   }

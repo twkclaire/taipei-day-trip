@@ -6,9 +6,12 @@
   <title>Booking</title>
   <link rel="stylesheet" href="/static/booking.css">
   <link rel="stylesheet" href="/static/signin.css" />
+  <link rel="stylesheet" href="/static/load.css">
+  <script src="/static/load.js" defer></script>
 </head>
 <body>
   <header>
+    <div class="loader"></div>
     <div class="flex-view">
       <a href="/static/index.html" class="left">
         <span class="title">台北一日遊</span>
@@ -97,11 +100,6 @@
       <div class="itinerary-img-text-wrap" id="itinerary-img-text-wrap">
         <img class="itinerary-img" id="itinerary-img">
         <div class="itinerary-text" id="itinerary-text">
-          <!-- <p class="itinerary-title">台北一日遊：平安鐘</p>
-          <p>日期：2021-04-23</p>
-          <p>時間：早上 9 點到下午 4 點</p>
-          <p>費用：新台幣 2000 元</p>
-          <p>地點：臺北市 大安區忠孝東路4段</p> -->
         </div>
         <div class="delete-wrap">
           <img class="danger" id="danger" src="/static/image/delete.svg">
@@ -110,37 +108,41 @@
       </div>
     </div>
     <hr>
-
+    <form id="booking-form">
     <div class="contact-form" id="contact-form">
       <div class="contact-text">您的聯絡資訊</div>
-      <div>聯絡姓名：<input></div>
-      <div>連絡信箱：<input></div>
-      <div>手機號碼：<input></div>
+      <div>聯絡姓名：<input class="contact-name" id="contact-name" required></div>
+      <div>連絡信箱：<input class="contact-email" id="contact-email" type="email"required></div>
+      <div>手機號碼：<input class="contact-phone" id="contact-phone" type="tel" required></div>
       <p class="contact-warn">請保持手機暢通，準時到達，導覽人員將用手機與您聯繫，務必留下正確的聯絡方式。</p>
     </div>
 
     <hr>
     <div class="card-info" id="card-info">
       <div class="card-text">信用卡付款資訊</div>
-      <div>卡片號碼：<input placeholder="**** **** **** **** " type="tel" maxlength="16"></div>
-      <div>過期時間：<input placeholder="MM/YY" type="tel"></div>
-      <div>驗證密碼：<input placeholder="CVV" type="tel" pattern="\d*" maxlength="3"></div>
+      <div class="card-number-group">卡片號碼：<div class="tpfield" id="card-number"></div></div>
+      <div class="expiration-date-group">過期時間：<div class="tpfield" id="card-expiration-date"></div></div>
+      <div class="ccv-group">驗證密碼： <div class="tpfield" id="card-ccv"></div></div>
     </div>
 
     <hr>
     <div class="submit-wrap">
       <div class="submit" id="submit-booking">
         <p class="submit-text" id="submit-text"></p>
-        <button class="submit-btn">確認訂購並付款</button>
+        <button class="submit-btn" id="submit-btn" type="submit">確認訂購並付款</button>
       </div>
     </div>
+  </form>
   </div>
+
 
   <footer id="footer">
     <div class="footer-text">COPYRIGHT © 2021 台北一日遊</div>
   </footer>
+  <script src="https://js.tappaysdk.com/sdk/tpdirect/v5.18.0"></script>
   <script src="/static/signin.js"></script>
   <script src="/static/booking.js"></script>
+
 
 </body>
 </html>
